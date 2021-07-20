@@ -9,11 +9,12 @@ interface IMovableItemProps {
   index: number,
   currentColumnName: string,
   moveCardHandler(dragIndex: number, hoverIndex: number): void,
-  setItems: React.Dispatch<any>;
+  setItems: React.Dispatch<any>,
+  id: number
 };
 
 
-const MovableItem: React.FC<IMovableItemProps> = ({ name, index, currentColumnName, moveCardHandler, setItems }) => {
+const MovableItem: React.FC<IMovableItemProps> = ({ name, id, index, currentColumnName, moveCardHandler, setItems }) => {
   const changeItemColumn = (currentItem: any, columnName: ColumnValues) => {
     setItems((prevState: Menu[]) => {
         return prevState.map(menu => {
@@ -33,11 +34,11 @@ const MovableItem: React.FC<IMovableItemProps> = ({ name, index, currentColumnNa
           if (!ref.current) {
               return;
           }
-          console.log({ item });
-          const dragIndex = item.index;
-          const hoverIndex = index;
+
+          const dragId = item.id;
+          const hoverId = id;
           // Don't replace items with themselves
-          if (dragIndex === hoverIndex) {
+          if (dragId === hoverId) {
               return;
           }
           // Determine rectangle on screen
@@ -53,27 +54,25 @@ const MovableItem: React.FC<IMovableItemProps> = ({ name, index, currentColumnNa
           // When dragging upwards, only move when the cursor is above 50%
           // Dragging downwards
           if (hoverClientY) {
-            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+            if (dragId < hoverId && hoverClientY < hoverMiddleY) {
                 return;
             }
             // Dragging upwards
-            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+            if (dragId > hoverId && hoverClientY > hoverMiddleY) {
                 return;
             }
           }
-          console.log({ dragIndex, hoverIndex });
+          
           // Time to actually perform the action
-          moveCardHandler(dragIndex, hoverIndex);
-          // Note: we're mutating the monitor item here!
-          // Generally it's better to avoid mutations,
-          // but it's good here for the sake of performance
-          // to avoid expensive index searches.
-          item.index = hoverIndex;
+          if (currentColumnName === item.currentColumnName) {
+            moveCardHandler(dragId, hoverId);
+          }
+          
       },
   });
 
   const [{isDragging}, drag] = useDrag({
-      item: {index, name, currentColumnName, type: 'any'},
+      item: {index, name, id, currentColumnName, type: 'any'},
       end: (item, monitor) => {
           const dropResult = monitor.getDropResult();
 
@@ -115,7 +114,9 @@ const MovableItem: React.FC<IMovableItemProps> = ({ name, index, currentColumnNa
       <Container ref={ref} style={{  opacity }}>
         <FoodName>{name}</FoodName>
         {/* <FoodImage /> */}
-        <FoodImage src={food} alt={`food-${name}`} />
+        <Frame>
+          <FoodImage src={food} alt={`food-${name}`} />
+        </Frame>
       </Container>
   );
 };
@@ -140,6 +141,11 @@ const FoodImage = styled.img`
   height: 50px;
   margin: 10px;
   background: #fff;
+`;
+
+const Frame = styled.div`
+  background-color: #fff;
+  box-shadow: 0 0 5px 0 rgb(0 0 0 / 10%) inset, 0 5px 10px 5px rgb(0 0 0 / 10%);
 `;
 
 export default MovableItem;

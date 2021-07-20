@@ -10,16 +10,15 @@ import { COLUMN_NAMES, menus } from './constants'
 const Columns = () => {
   const [items, setItems] = useState(menus);
 
-  const moveCardHandler = (dragIndex: number, hoverIndex: number) => {
-      const dragItem = items[dragIndex];
-      console.log({ dragItem });
+  const moveCardHandler = (dragId: number, hoverId: number) => {
+      const [dragItem] = items.filter(item => item.id === dragId);
+      const dragIndex = items.findIndex(item => item.id === dragId);
+      const hoverIndex = items.findIndex(item => item.id === hoverId);
       if (dragItem) {
           setItems((prevState => {
               const coppiedStateArray = [...prevState];
-
               // remove item by "hoverIndex" and put "dragItem" instead
               const prevItem = coppiedStateArray.splice(hoverIndex, 1, dragItem);
-
               // remove item by "dragIndex" and put "prevItem" instead
               coppiedStateArray.splice(dragIndex, 1, prevItem[0]);
 
@@ -37,6 +36,7 @@ const Columns = () => {
                 currentColumnName={item.column}
                 setItems={setItems}
                 index={index}
+                id={item.id}
                 moveCardHandler={moveCardHandler}
               />
           ))

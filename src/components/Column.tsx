@@ -40,7 +40,7 @@ const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  padding: 10px;
   gap: 10px;
   min-height: 200px;
   border-radius: 10px;
@@ -50,9 +50,8 @@ const Container = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 16px;
-  text-transform: uppercase;
-  border-bottom: 2px solid red;
+  font-size: 13px;
+  text-align: center;
 `;
 
 export default Column;
